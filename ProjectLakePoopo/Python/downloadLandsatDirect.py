@@ -11,4 +11,4 @@ def download(url, filename):
     fp.close()
     
 download('http://storage.googleapis.com/earthengine-public/landsat/L8/233/073/LC82330732013310LGN00.tar.bz', './data/LC82330732013310LGN00.tar.bz')
-download('http://storage.googleapis.com/earthengine-public/landsat/L8/233/073/LC82330732016319LGN00.tar.bz', './data/LC82330732016319LGN00.tar.bz')
+download('http://storage.googleapis.com/earthengine-public/landsat/L8/233/073/LC82330732015284LGN00.tar.bz', './data/LC82330732015284LGN00.tar.bz')
