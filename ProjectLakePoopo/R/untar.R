@@ -7,10 +7,10 @@ library(rgdal)
 library(bitops)
 
 # # Untar 2013
-# untar("./data/LC82330732013310LGN00.tar.bz", exdir='./data/y2013d310/')
-# 
+untar("./data/LC82330732013310LGN00.tar.bz", exdir='./data/y2013d310/')
+
 # # Untar 2016
-# untar("./data/LC82330732016319LGN00.tar.bz", exdir='./data/y2016d319/')
+untar("./data/LC82330732016319LGN00.tar.bz", exdir='./data/y2016d319/')
 
 # Create bricks
 landsatPath2013 <- list.files("./data/y2013d310/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[5:6]
