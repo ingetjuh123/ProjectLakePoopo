@@ -19,14 +19,6 @@ landsatStack2013 <- stack(landsatPath2013)
 landsatPath2016 <- list.files("./data/y2016d319/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[5:6]
 landsatStack2016 <- stack(landsatPath2016)
 
-
-## Remove Outliers
-landsatStack2013$LC82330732013310LGN00_B3[landsatStack2016$LC82330732013310LGN00_B3>10000]<-NA
-landsatStack2013$LC82330732013310LGN00_B4[landsatStack2016$LC82330732013310LGN00_B4>10000]<-NA
-
-landsatStack2016$LC82330732016319LGN00_B3[landsatStack2016$LC82330732016319LGN00_B3>10000]<-NA
-landsatStack2016$LC82330732016319LGN00_B4[landsatStack2016$LC82330732016319LGN00_B4>10000]<-NA
-
 ## Add Names
 names(landsatStack2013)<- c("band3","band4")
 names(landsatStack2016)<- c("band3","band4")
