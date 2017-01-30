@@ -24,7 +24,7 @@ names(landsatStack2013)<- c("band3","band4")
 names(landsatStack2016)<- c("band3","band4")
 
 ## Write Raster 
-writeRaster(landsatStack2013, filename="./output/Landsat2013", format=GTiff)
+writeRaster(landsatStack2013, filename="./output/Landsat2013", format= "GTiff")
 
 ## Visualization
 # plot(landsatStack[[3]])
