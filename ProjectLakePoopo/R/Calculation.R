@@ -7,11 +7,11 @@ library(rgdal)
 library(bitops)
 
 ## Create bricks
-landsatPath2013 <- list.files("./data/y2013d310/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(6,7)]
-landsatStack2013 <- stack(landsatPath2013)
+landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(5,8,12)]
+landsatStack2013 <- stack(landsatPath2013[1:2])
 
-landsatPath2015 <- list.files("./data/y2015d284/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(6,7)]
-landsatStack2015 <- stack(landsatPath2015)
+landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(5,8,12)]
+landsatStack2015 <- stack(landsatPath2015[1:2])
 
 ## Set extent
 (xminset <- max(landsatStack2013@extent[1],landsatStack2015@extent[1]))
@@ -25,8 +25,27 @@ landsatStack2015 <-crop(landsatStack2015, extent(xminset, xmaxset,yminset,ymaxse
 # landsatStack2015 <- calc(landsatStack2015, fun=function(x) x /10000)
 
 ## Add Names
-names(landsatStack2013)<- c("band4","band5")
-names(landsatStack2015)<- c("band4","band5")
+names(landsatStack2013)<- c("band5","band8")
+names(landsatStack2015)<- c("band5","band8")
+
+## Remove Snow, Clouds and Salt from Stack
+Mask2013 <- setValues(raster(landsatStack2013), NA)
+Mask2013[landsatPath2013[3]==20480]<-1
+Mask2013[landsatPath2013[3]==23552]<-1
+writeRaster(Mask2013, filename="./output/Mask2013", format="GTiff", overwrite=T)
+
+Mask2015 <- setValues(raster(landsatStack2015), NA)
+Mask2015[landsatPath2015[[3]]==28672]<-1
+Mask2015[landsatPath2015[[3]]==23552]<-1
+writeRaster(Mask2015, filename="./output/Mask2015", format="GTiff", overwrite=T)
+
+SnowCloudsSalt <- setValues(raster(landsatStack2015), NA)
+SnowCloudsSalt[Mask2013!=1]<-1
+SnowCloudsSalt[Mask2015!=1]<-1
+
+#landsatStack2013 <- mask(landsatStack2013,SnowCloudsSalt, inverse=T, na.rm=T)
+landsatStack2013[SnowCloudsSalt==1]<-NA
+landsatStack2015[SnowCloudsSalt==1]<-NA
 
 ## Calculate NDWI
 ndwi2013 <- overlay(landsatStack2013[[1]], landsatStack2013[[2]], fun=function(x,y){(x-y)/(x+y)},na.rm=T)
