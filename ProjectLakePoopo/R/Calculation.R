@@ -1,16 +1,16 @@
 ## Team Script0rs - Inge & David
-## Project Lake Poopo - main
+## Project Lake Poopo - Calculation.r
 
 ## Load Library
 library(raster)
 library(rgdal)
 library(bitops)
 
-# Create bricks
-landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(6,7)]
+## Create bricks
+landsatPath2013 <- list.files("./data/y2013d310/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(6,7)]
 landsatStack2013 <- stack(landsatPath2013)
 
-landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(6,7)]
+landsatPath2015 <- list.files("./data/y2015d284/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(6,7)]
 landsatStack2015 <- stack(landsatPath2015)
 
 ## Set extent
@@ -47,10 +47,46 @@ writeRaster(Lake2013, filename="./output/Lake2013", format="GTiff",overwrite=T)
 writeRaster(Lake2015, filename="./output/Lake2015", format="GTiff",overwrite=T)
 
 ## Group Raster Cells
-Lake2013Clump <- clump(Lake2013, directions=8, filename=".output/Lake2013Clump")
-Lake2015Clump <- clump(Lake2015, directions=8, filename=".output/Lake2015Clump")
+Lake2013Clump <- clump(Lake2013, directions=8, filename="./output/Lake2013Clump")
+Lake2015Clump <- clump(Lake2015, directions=8, filename="./output/Lake2015Clump")
+
+## Calculate Frequency
+Lake2013clumpFreq <- freq(Lake2013Clump)
+Lake2015clumpFreq <- freq(Lake2015Clump)
+
+## Create Data Frame from Clump Data
+Lake2013clumpFreq <- as.data.frame(Lake2013clumpFreq)
+Lake2015clumpFreq <- as.data.frame(Lake2015clumpFreq) 
+
+## Calculate Second Biggest Value Area
+n2013 <- length(Lake2013clumpFreq$count)
+LakeValue2013 <- sort(Lake2013clumpFreq$count, partial=n2013-1)[n2013-1]
+
+n2015 <- length(Lake2015clumpFreq$count)
+LakeValue2015 <- sort(Lake2015clumpFreq$count, partial=n2015-1)[n2015-1]
 
 
-## ## Write Raster Classified Lake
-writeRaster(Lake2013Clump, filename="./output/Lake2013", format="GTiff",overwrite=T)
-writeRaster(Lake2015Clump, filename="./output/Lake2015", format="GTiff",overwrite=T)
+## Calculate Excluded ID's
+Lake2013excludeID <- Lake2013clumpFreq$value[which(Lake2013clumpFreq$count<LakeValue2013)]
+Lake2015excludeID <- Lake2015clumpFreq$value[which(Lake2015clumpFreq$count<LakeValue2015)]
+
+## Create New Lake Mask
+Lake2013Sieved <- Lake2013
+Lake2015Sieved <- Lake2015
+
+## Assign NA to all variables with excluded ID
+Lake2013Sieved[Lake2013Clump %in% Lake2013excludeID] <- NA
+Lake2015Sieved[Lake2015Clump %in% Lake2015excludeID] <- NA
+
+## Write Raster Sieved Lake
+writeRaster(Lake2013Sieved, filename="./output/Lake2013Sieved", format="GTiff",overwrite=T)
+writeRaster(Lake2015Sieved, filename="./output/Lake2015Sieved", format="GTiff",overwrite=T)
+
+## Calculate Surface Area (30m by 30m resolution per pixel) and into Square Kilometer
+(Lake2013Surface <- LakeValue2013 * 900 / 1000000)
+(Lake2015Surface <- LakeValue2015 * 900 / 1000000)
+
+## Calculate Decline Surface Area (Percentage that is 
+(DeclineLakePerc <-  100-(Lake2015Surface/Lake2013Surface)*100)
+(DeclineLakeSquareMeter <- Lake2013Surface - Lake2015Surface)
+
