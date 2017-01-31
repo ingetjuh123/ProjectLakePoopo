@@ -16,18 +16,11 @@ $: sudo apt-get update
 
 $: sudo apt-get install python-pip python-numpy python-scipy libgdal-dev libatlas-base-dev gfortran libfreetype6-dev python-setuptools python-dev
 
+$: sudo apt install python-pycurl
+
 $: sudo pip install landsat-util
 
 $: sudo pip install python-utils
-
-$: sudo apt install python-pycurl
-
-For R:
-install Rpython
-
-
-
-
 
 # Step 2 Getting the Download code
 You need to get code
