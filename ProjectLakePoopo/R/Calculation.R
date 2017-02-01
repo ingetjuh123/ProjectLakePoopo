@@ -7,32 +7,65 @@ library(rgdal)
 library(bitops)
 
 par(mfrow=c(2,2), oma=c(0,0,2,0))
-title("Difference Lake Poopo 2013-2015 Bolivia", outer=T)
+
 bands <- list(c(6,7,"Red","NIR","NDWIgeo"),c(7,8,"NIR","MIR","NDWIgao"),c(5,7,"Green","NIR","NDWI"),c(5,8,"Green","MIR","MNDWI"))
 
+## Create layers for Mask
+
+landsatStack2013 <- stack("./data/8233073201331000//LC82330732013310LGN00_BQA.TIF")
+landsatStack2015 <- stack("./data/8233073201528400//LC82330732015284LGN00_BQA.TIF")
+
+## Set extent
+xminset <- max(landsatStack2013@extent[1],landsatStack2015@extent[1])
+xmaxset <- min(landsatStack2013@extent[2],landsatStack2015@extent[2])
+yminset <- min(landsatStack2013@extent[3],landsatStack2015@extent[3])
+ymaxset <- max(landsatStack2013@extent[4],landsatStack2015@extent[4])
+
+landsatStack2013 <-crop(landsatStack2013, extent(xminset, xmaxset,yminset,ymaxset))
+landsatStack2015 <-crop(landsatStack2015, extent(xminset, xmaxset,yminset,ymaxset))
+
+## Calculate Mask of Snow, Salt and Cloud in both years
+Mask2013 <- setValues(raster(landsatStack2013), NA)
+Mask2013[landsatStack2013==20480]<-1
+Mask2013[landsatStack2013==23552]<-1
+
+Mask2015 <- setValues(raster(landsatStack2013), NA)
+Mask2015[landsatStack2015==28672]<-1
+Mask2015[landsatStack2015==23552]<-1
+
+SnowCloudsSalt <- setValues(raster(landsatStack2013), NA)
+SnowCloudsSalt[Mask2013!=1]<-1
+writeRaster(SnowCloudsSalt, filename="./output/SnowCloudSalt2", format="GTiff",overwrite=T)
+SnowCloudsSalt[Mask2015!=1]<-1
+
+writeRaster(SnowCloudsSalt, filename="./output/SnowCloudSalt", format="GTiff",overwrite=T)
+
+## Remove Variables
+rm(landsatStack2013,landsatStack2015,Mask2013,Mask2015)
+
 for (band in bands){
-  ## Create bricks
-  landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(band[1],band[2],12)]
-  (landsatStack2013 <- stack(landsatPath2013))
+  ## Create Stacks for Bands
+  landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(band[1],band[2])]
+  landsatStack2013 <- stack(landsatPath2013)
 
-  landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(band[1],band[2],12)]
-  (landsatStack2015 <- stack(landsatPath2015))
+  landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(band[1],band[2])]
+  landsatStack2015 <- stack(landsatPath2015)
 
-  ## Set extent
-  (xminset <- max(landsatStack2013@extent[1],landsatStack2015@extent[1]))
-  (xmaxset <- min(landsatStack2013@extent[2],landsatStack2015@extent[2]))
-  (yminset <- min(landsatStack2013@extent[3],landsatStack2015@extent[3]))
-  (ymaxset <- max(landsatStack2013@extent[4],landsatStack2015@extent[4]))
-  landsatStack2013 <-crop(landsatStack2013, extent(xminset, xmaxset,yminset,ymaxset))
-  landsatStack2015 <-crop(landsatStack2015, extent(xminset, xmaxset,yminset,ymaxset))
+
+  landsatStack2013 <-crop(landsatStack2013, extent(xminset,xmaxset,yminset,ymaxset))
+  landsatStack2015 <-crop(landsatStack2015, extent(xminset,xmaxset,yminset,ymaxset))
+  
+  ## Remove "Cloud"-mask from Landsatstacks
+  landsatStack2013[SnowCloudsSalt==1]<-NA
+  landsatStack2015[SnowCloudsSalt==1]<-NA
 
   # ## Change Data Type
   # landsatStack2015 <- calc(landsatStack2015, fun=function(x) x /10000)
-
+  
   ## Add Names
-  names(landsatStack2013)<- c(paste0("band", as.character(band[3])),paste0("band", as.character(band[4])), "BQA")
-  names(landsatStack2015)<- c(paste0("band", as.character(band[3])),paste0("band", as.character(band[4])), "BQA")
-
+  names(landsatStack2013)<- c(paste0("band", as.character(band[1])),paste0("band", as.character(band[2])))
+  names(landsatStack2015)<- c(paste0("band", as.character(band[1])),paste0("band", as.character(band[2])))
+  
   ## Calculate NDWI
   ndwi2013 <- overlay(landsatStack2013[[1]], landsatStack2013[[2]], fun=function(x,y){(x-y)/(x+y)},na.rm=T)
   ndwi2015 <- overlay(landsatStack2015[[1]], landsatStack2015[[2]], fun=function(x,y){(x-y)/(x+y)},na.rm=T)
@@ -88,19 +121,20 @@ for (band in bands){
 
 
   ## Calculate Surface Area (30m by 30m resolution per pixel) and into Square Kilometer
-  (Lake2013Surface <- LakeValue2013 * 900 / 1000000)
-  (Lake2015Surface <- LakeValue2015 * 900 / 1000000)
+  Lake2013Surface <- LakeValue2013 * 900 / 1000000
+  Lake2015Surface <- LakeValue2015 * 900 / 1000000
 
   ## Calculate Decline Surface Area (Percentage that is 
-  (DeclineLakePerc <- format(round((100-((Lake2015Surface/Lake2013Surface)*100)),1), nsmall=1))
-  (DeclineLakeArea <- format(round((Lake2013Surface - Lake2015Surface),1), nsmall=1))
+  DeclineLakePerc <- format(round((100-((Lake2015Surface/Lake2013Surface)*100)),1), nsmall=1)
+  DeclineLakeArea <- format(round((Lake2013Surface - Lake2015Surface),1), nsmall=1)
 
   ## Visualize
-  textwaterindex <- paste("Water Index: (", as.character(band[3]), "-", as.character(band[4]), ") / (", as.character(band[3]), "+", as.character(band[4]), ")")
+  textwaterindex <- paste("Water Index", as.character(band[5]),": (", as.character(band[3]), "-", as.character(band[4]), ") / (", as.character(band[3]), "+", as.character(band[4]), ")")
   textlakearea <- paste("Lake Area Decline:", as.character(DeclineLakeArea), "KM2 -", as.character(DeclineLakePerc),"%")
   plot(Lake2013Sieved, legend = F, main = textwaterindex, col="red")
   plot(Lake2015Sieved, legend = F, col = "black", add=T)
   legend("bottom", textlakearea, border=NULL)
-  legend("right", c("2013","2015"), fill = c("red","black")) 
+  legend("topright", c("2013","2015"), fill = c("red","black")) 
 }
 
+title("Difference Lake Poopo 2013-2015 Bolivia", outer=T)
