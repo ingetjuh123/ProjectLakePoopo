@@ -6,8 +6,9 @@ library(raster)
 library(rgdal)
 library(bitops)
 
-par(mfrow=c(2,2))
-bands <- list(c(5,7),c(5,8),c(4,7),c(4,8))
+par(mfrow=c(2,2), oma=c(0,0,2,0))
+title("Difference Lake Poopo 2013-2015 Bolivia", outer=T)
+bands <- list(c(6,7,"Red","NIR","NDWIgeo"),c(7,8,"NIR","MIR","NDWIgao"),c(5,7,"Green","NIR","NDWI"),c(5,8,"Green","MIR","MNDWI"))
 
 for (band in bands){
   ## Create bricks
@@ -16,8 +17,6 @@ for (band in bands){
 
   landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(band[1],band[2],12)]
   (landsatStack2015 <- stack(landsatPath2015))
-
-
 
   ## Set extent
   (xminset <- max(landsatStack2013@extent[1],landsatStack2015@extent[1]))
@@ -31,8 +30,8 @@ for (band in bands){
   # landsatStack2015 <- calc(landsatStack2015, fun=function(x) x /10000)
 
   ## Add Names
-  names(landsatStack2013)<- c(paste0("band", as.character(band[1])),paste0("band", as.character(band[2])), "BQA")
-  names(landsatStack2015)<- c(paste0("band", as.character(band[1])),paste0("band", as.character(band[2])), "BQA")
+  names(landsatStack2013)<- c(paste0("band", as.character(band[3])),paste0("band", as.character(band[4])), "BQA")
+  names(landsatStack2015)<- c(paste0("band", as.character(band[3])),paste0("band", as.character(band[4])), "BQA")
 
   ## Calculate NDWI
   ndwi2013 <- overlay(landsatStack2013[[1]], landsatStack2013[[2]], fun=function(x,y){(x-y)/(x+y)},na.rm=T)
@@ -96,15 +95,12 @@ for (band in bands){
   (DeclineLakePerc <- format(round((100-((Lake2015Surface/Lake2013Surface)*100)),1), nsmall=1))
   (DeclineLakeArea <- format(round((Lake2013Surface - Lake2015Surface),1), nsmall=1))
 
-  band = c(5,8)
-  dev.off()
-
-  textwaterindex <- paste("Water Index is based on Band", as.character(band[1]), "and", as.character(band[2]))
+  ## Visualize
+  textwaterindex <- paste("Water Index: (", as.character(band[3]), "-", as.character(band[4]), ") / (", as.character(band[3]), "+", as.character(band[4]), ")")
   textlakearea <- paste("Lake Area Decline:", as.character(DeclineLakeArea), "KM2 -", as.character(DeclineLakePerc),"%")
-  plot(Lake2013Sieved, legend = F, main = "Difference Lake Poopo 2015-2013", col="red")
+  plot(Lake2013Sieved, legend = F, main = textwaterindex, col="red")
   plot(Lake2015Sieved, legend = F, col = "black", add=T)
-  legend("top", textwaterindex)
-  legend("bottom", textlakearea)
+  legend("bottom", textlakearea, border=NULL)
   legend("right", c("2013","2015"), fill = c("red","black")) 
 }
 
