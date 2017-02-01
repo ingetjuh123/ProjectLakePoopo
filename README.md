@@ -22,6 +22,8 @@ $: sudo pip install landsat-util
 
 $: sudo pip install python-utils
 
+$: sudo pip install Rkward-igraph
+
 # Step 2 Getting the Download code
 You need to get code
 http://landsat-util.readthedocs.io/en/latest/api.html#landsat.downloader.Downloader.amazon_s3
