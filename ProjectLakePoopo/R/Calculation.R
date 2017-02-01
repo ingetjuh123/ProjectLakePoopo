@@ -8,7 +8,7 @@ library(bitops)
 
 par(mfrow=c(2,2), oma=c(0,0,2,0))
 
-bands <- list(c(6,7,"Red","NIR","NDWIgeo"),c(7,8,"NIR","MIR","NDWIgao"),c(5,7,"Green","NIR","NDWI"),c(5,8,"Green","MIR","MNDWI"))
+bands <- list(c(4,6,"Blue","Red","NDWIgeo"),c(7,8,"NIR","MIR","NDWIgao"),c(5,7,"Green","NIR","NDWI"),c(5,8,"Green","MIR","MNDWI"))
 
 ## Create layers for Mask
 
