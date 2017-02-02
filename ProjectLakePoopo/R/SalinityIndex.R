@@ -1,5 +1,5 @@
 ## Team Script0rs - Inge & David
-## Project Lake Poopo - Calculation.r
+## Project Lake Poopo - SalinityIndex.R
 
 ## Load Library
 library(raster)
@@ -7,10 +7,10 @@ library(rgdal)
 library(bitops)
 
 ## Create Stacks for Bands
-landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(5,8)]
+landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(5,8)]
 landsatStack2013 <- stack(landsatPath2013)
 
-landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)[c(5,8)]
+landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(5,8)]
 landsatStack2015 <- stack(landsatPath2015)
 
 xminset <- max(landsatStack2013@extent[1],landsatStack2015@extent[1])
@@ -76,10 +76,10 @@ Lake2015Sieved[Lake2015Clump %in% Lake2015excludeID] <- NA
 rm(list=setdiff(ls(),c("Lake2013Sieved", "Lake2015Sieved")))
 
 ## Create Stacks for Bands
-landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)
+landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)
 landsatStack2013 <- stack(landsatPath2013[c(4,6)])
 
-landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.TIF'), full.names = TRUE)
+landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)
 landsatStack2015 <- stack(landsatPath2015[c(4,6)])
 
 landsatStack2013 <-crop(landsatStack2013, extent(Lake2013Sieved))
@@ -111,9 +111,6 @@ SI2015 <- overlay(landsatStack2015[[1]], landsatStack2015[[2]], fun=function(x,y
 writeRaster(SI2013, filename="./output/SI2013Lake", format="GTiff",overwrite=T)
 writeRaster(SI2015, filename="./output/SI2015Lake", format="GTiff",overwrite=T)
 
-## Visualization
-crs<-"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
-ViSI2013 <-projectRaster(SI2013, crs=crs, method="ngb")
 
   
 
