@@ -8,6 +8,8 @@ library(rgdal)
 library(bitops)
 library(optparse)
 
+print("CalcBiggestWaterArea Started ...")
+
 ## Create Option List To Store Arguments
 option_list = list(
   make_option(c("-a", "--avar"), action="store", default=NA, type='character',
@@ -138,3 +140,4 @@ for (band in bands){
 title("Difference Lake Poopo in Bolivia 2013-2015 - Landsat 8 OLI", outer=T)
 dev.off()
 
+print("CalcBiggestWaterArea Finished ...")

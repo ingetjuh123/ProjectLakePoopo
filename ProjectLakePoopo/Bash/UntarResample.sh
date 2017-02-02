@@ -1,8 +1,10 @@
 #!/bin/bash
 
+
 ## Function UntarResample
 #@ parameter res - input resolution in meters for resampling (standard res is 30 by 30m)
 function UntarResample {
+	echo "UntarResample Started ..."
 	# Receive First Argument   	
 	res=$1
 	
@@ -28,5 +30,6 @@ function UntarResample {
 			sudo rm $file3
 		done
 	cd ../
+	echo "UntarResample Finished ..."
 	done
 }

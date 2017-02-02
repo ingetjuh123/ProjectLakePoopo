@@ -6,6 +6,9 @@ library(raster)
 library(rgdal)
 library(bitops)
 
+## Print
+print("SalinityIndex Started ...")
+
 ## Create Stacks for Bands
 landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(5,8)]
 landsatStack2013 <- stack(landsatPath2013)
@@ -96,7 +99,7 @@ yminset <- max(landsatStack2013@extent[3],landsatStack2015@extent[3])
 ymaxset <- min(landsatStack2013@extent[4],landsatStack2015@extent[4])
 
 landsatStack2013 <-crop(landsatStack2013, extent(xminset, xmaxset,yminset,ymaxset))
-(landsatStack2015 <-crop(landsatStack2015, extent(xminset, xmaxset,yminset,ymaxset)))
+landsatStack2015 <-crop(landsatStack2015, extent(xminset, xmaxset,yminset,ymaxset))
 
 ## Add Names
 names(landsatStack2013)<- c("Blue", "Red")
@@ -109,6 +112,8 @@ SI2015 <- overlay(landsatStack2015[[1]], landsatStack2015[[2]], fun=function(x,y
 ## Write Raster Salinity Index
 writeRaster(SI2013, filename="./output/SI2013Lake", format="GTiff",overwrite=T)
 writeRaster(SI2015, filename="./output/SI2015Lake", format="GTiff",overwrite=T)
+
+print("SalinityIndex Finished ...")
 
 
   
