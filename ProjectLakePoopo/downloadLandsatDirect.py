@@ -3,9 +3,12 @@ import pycurl
 from StringIO import StringIO
 
 ## Create Download Function with pycurl
-def download(url, filename):
+## Create Filepath from Filename Landsat Archive
+def download(url):
     print("Download Started ...")
-    fp = open(filename, "wb")
+    filename = url[-28:]
+    filepath = "./data/" + filename
+    fp = open(filepath, "wb")
     c = pycurl.Curl()
     c.setopt(c.URL, url)
     c.setopt(c.WRITEDATA, fp)
@@ -13,4 +16,3 @@ def download(url, filename):
     c.close()
     fp.close()
     print("Download Finished ...")
-

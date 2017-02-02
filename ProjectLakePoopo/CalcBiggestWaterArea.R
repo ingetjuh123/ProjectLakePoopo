@@ -6,7 +6,25 @@
 library(raster)
 library(rgdal)
 library(bitops)
+library(optparse)
 
+## Create Option List To Store Arguments
+option_list = list(
+  make_option(c("-a", "--avar"), action="store", default=NA, type='character',
+              help="just a variable named a")
+)
+opt = parse_args(OptionParser(option_list=option_list))
+
+## Read Lines From Arguments By String Splitting
+b = as.list(strsplit(opt$a,"<x>"))
+print(b)
+bands = list()
+for (line in b){
+  bands = c(bands,as.list(strsplit(line,",")))
+}
+
+print(bands)
+print(length(bands))
 ### Short Version
 ## Input Is List of Band(s)
 ## <band nr1> <band nr2> <band name1> <band name2> <Index Name>
@@ -16,16 +34,17 @@ library(bitops)
 ## <band nr1> <band nr2> <band name1> <band name2> <Index Name>
 #bands <- list(c(6,7,"Red","NIR","NDWIgeo"),c(7,8,"NIR","MIR","NDWIgao"),c(5,7,"Green","NIR","NDWI"),c(5,8,"Green","MIR","MNDWI"))
 
-calcwaterindex<- function(bands,npar=TRUE,print=TRUE) {
+
+#calcwaterindex<- function(bands) {
 
   ## Starting to write image to output
   tiff('./output/LakeWaterIndex.tiff', res=300)
   
   ## Check number of bands and set number of rows and columns appropriately
-  nrbands = length(bands)
-  nrow = ceiling(sqrt(nrbands))
-  ncol = round(sqrt(nrbands))
-  par(mfrow=c(nrow,ncol), oma=c(0,0,2,0))
+  (nrbands = length(bands))
+  (nrow = ceiling(sqrt(nrbands)))
+  (ncol = round(sqrt(nrbands)))
+  par(mfrow=c(as.numeric(nrow),as.numeric(ncol)), oma=c(0,0,2,0))
 
   ## Starting For-Loop to Create Multiple Images For Multiple Water Indexes
   for (band in bands){
@@ -124,4 +143,7 @@ calcwaterindex<- function(bands,npar=TRUE,print=TRUE) {
   ## Print Title on Top of All Images
   title("Difference Lake Poopo in Bolivia 2013-2015 - Landsat 8 OLI", outer=T)
   dev.off()
-}
+#}
+
+## Call Function
+#calcwaterindex(bands)
