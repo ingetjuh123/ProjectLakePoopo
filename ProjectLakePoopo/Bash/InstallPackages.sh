@@ -11,6 +11,4 @@ sudo apt install python-pycurl
 
 sudo pip install python-utils
 
-sudo pip install Rkward-igraph
-
 echo "Install Package Finished ..."

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Install Packages
-./Bash/InstallPackages.sh
+bash ./Bash/InstallPackages.sh
 
 ## Download Landsat Imagery from Google Storage to data directory
 #@ parameter urls - input urls which you want to download (see python file)
@@ -12,6 +12,9 @@ python ./Python/downloadLandsatDirect.py
 #@ parameter res - input resolution in meters for resampling (standard res is 30 by 30m)
 source ./Bash/UntarResample.sh
 UntarResample 150
+
+## Set Directory Back To Main
+cd ../
 
 ## Calculate Decline Lake Area For Different Water Indexes
 ## String will be converted to list in list (first list is seperated by <x> and second list by ,

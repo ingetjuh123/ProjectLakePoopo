@@ -3,15 +3,16 @@
 ## Project Lake Poopo - Calculation.r
 
 ## Install Libraries if needed
-list.of.packages <- c("raster", "rgdal", "bitops","optparse")
+list.of.packages <- c("raster", "rgdal", "bitops","optparse","igraph")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-if(length(new.packages)) install.packages(new.packages)
+if(length(new.packages)) install.packages(new.packages,repos="http://cran.rstudio.com/")
 
 ## Load Libraries
 library(raster)
 library(rgdal)
 library(bitops)
 library(optparse)
+library(igraph)
 
 print("CalcBiggestWaterArea Started ...")
 
