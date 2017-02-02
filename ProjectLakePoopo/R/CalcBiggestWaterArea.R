@@ -2,7 +2,12 @@
 ## Team Script0rs - Inge & David
 ## Project Lake Poopo - Calculation.r
 
-## Load Library
+## Install Libraries if needed
+list.of.packages <- c("raster", "rgdal", "bitops","optparse")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages)
+
+## Load Libraries
 library(raster)
 library(rgdal)
 library(bitops)
