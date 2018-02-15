@@ -10,10 +10,10 @@ library(bitops)
 print("SalinityIndex Started ...")
 
 ## Create Stacks for Bands
-landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(5,8)]
+landsatPath2013 <- list.files("./data/LC82330732013310LGN00/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(5,8)]
 landsatStack2013 <- stack(landsatPath2013)
 
-landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(5,8)]
+landsatPath2015 <- list.files("./data/LC82330732015284LGN00/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(5,8)]
 landsatStack2015 <- stack(landsatPath2015)
 
 xminset <- max(landsatStack2013@extent[1],landsatStack2015@extent[1])
@@ -80,10 +80,10 @@ Lake2015Sieved[Lake2015Clump %in% Lake2015excludeID] <- NA
 rm(list=setdiff(ls(),c("Lake2013Sieved", "Lake2015Sieved")))
 
 ## Create Stacks for Bands
-landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)
+landsatPath2013 <- list.files("./data/LC82330732013310LGN00/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)
 landsatStack2013 <- stack(landsatPath2013[c(4,6)])
 
-landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)
+landsatPath2015 <- list.files("./data/LC82330732015284LGN00/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)
 landsatStack2015 <- stack(landsatPath2015[c(4,6)])
 
 landsatStack2013 <-crop(landsatStack2013, extent(Lake2013Sieved))

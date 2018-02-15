@@ -51,10 +51,10 @@ par(mfrow=c(nrow,ncol), oma=c(0,0,2,0))
 ## Starting For-Loop to Create Multiple Images For Multiple Water Indexes
 for (band in bands){
   ## Create Stacks
-  landsatPath2013 <- list.files("./data/8233073201331000/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(as.numeric(band[1]),as.numeric(band[2]))]
+  landsatPath2013 <- list.files("./data/LC82330732013310LGN00/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(as.numeric(band[1]),as.numeric(band[2]))]
   landsatStack2013 <- stack(landsatPath2013)
 
-  landsatPath2015 <- list.files("./data/8233073201528400/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(as.numeric(band[1]),as.numeric(band[2]))]
+  landsatPath2015 <- list.files("./data/LC82330732015284LGN00/", pattern = glob2rx('LC8*.tif'), full.names = TRUE)[c(as.numeric(band[1]),as.numeric(band[2]))]
   landsatStack2015 <- stack(landsatPath2015)
 
   ## Set extent For Stacks
@@ -126,7 +126,7 @@ for (band in bands){
   Lake2013Surface <- LakeValue2013 * 900 / 1000000
   Lake2015Surface <- LakeValue2015 * 900 / 1000000
 
-  ## Calculate Decline Surface Area (Percentage that is 
+  ## Calculate Decline Surface Area
   DeclineLakePerc <- format(round((100-((Lake2015Surface/Lake2013Surface)*100)),1), nsmall=1)
   DeclineLakeArea <- format(round((Lake2013Surface - Lake2015Surface),1), nsmall=1)
 

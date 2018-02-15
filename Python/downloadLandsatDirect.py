@@ -21,12 +21,11 @@ def download(url):
         fp.close()
         print("Extracted to location:\n", filepath)
 
-## Skip first argument, because it holds Python script location
+
 skip = True
 ## Load arguments from system
 for url in sys.argv:
-    print(url)
-    if skip == True:
+    if skip == True: # Skip first argument, because it has Python script location
         skip = False
         continue
     if type(url) != type("str"):
